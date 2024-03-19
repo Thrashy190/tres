@@ -3,10 +3,19 @@
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import { DataGrid, GridColDef, GridValueGetterParams } from "@mui/x-data-grid";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { useState, useEffect } from "react";
+import { getItems } from "@/db/functions";
+import Product from "@/interface/product";
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 90 },
+  {
+    field: "name",
+    headerName: "Nombre",
+    width: 150,
+    editable: true,
+  },
   {
     field: "description",
     headerName: "Descripcion",
@@ -20,8 +29,8 @@ const columns: GridColDef[] = [
     editable: true,
   },
   {
-    field: "Precio",
-    headerName: "price",
+    field: "price",
+    headerName: "Precio",
     type: "number",
     width: 110,
     editable: true,
@@ -29,10 +38,26 @@ const columns: GridColDef[] = [
 ];
 
 const rows = [
-  { id: 1, description: "Producto 1", brand: "Marca 1", price: 1000 },
+  {
+    id: 1,
+    name: "pizza",
+    description: "Producto 1",
+    brand: "Marca 1",
+    price: 1000,
+  },
 ];
 
 export default function Home() {
+  const [products, setProducts] = useState<Product[]>([]);
+
+  const getProducts = async () => {
+    setProducts(await getItems());
+  };
+
+  useEffect(() => {
+    getProducts();
+  }, []);
+
   return (
     <main className="flex items-center p-12">
       <div className="lg:grid lg:grid-cols-12 flex flex-col-reverse gap-10">
@@ -42,7 +67,7 @@ export default function Home() {
               <TextField
                 style={{ width: "100%" }}
                 id="outlined-basic"
-                label="ID"
+                label="Nombre"
                 variant="outlined"
                 type="number"
               />
@@ -72,7 +97,7 @@ export default function Home() {
           <h1 className="text-2xl text-white">Productos</h1>
           <div>
             <DataGrid
-              rows={rows}
+              rows={products}
               columns={columns}
               initialState={{
                 pagination: {
